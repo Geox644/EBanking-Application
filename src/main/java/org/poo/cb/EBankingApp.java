@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 public class EBankingApp {
     private static EBankingApp instance;
     private Map<String, User> users;
+    private StocksManager stocksRecommended;
+    private boolean premiumOption = false;
+
 
     public void clearUserData() {
         users.clear();
@@ -17,6 +19,7 @@ public class EBankingApp {
 
     private EBankingApp() {
         users = new HashMap<>();
+        stocksRecommended = new StocksManager();
     }
 
     public static EBankingApp getInstance() {
@@ -26,7 +29,7 @@ public class EBankingApp {
         return instance;
     }
 
-//    public void createUser(String email, String firstName, String lastName, String address) throws UserAlreadyExistsException {
+    //    public void createUser(String email, String firstName, String lastName, String address) throws UserAlreadyExistsException {
 //        if (!users.containsKey(email)) {
 //            User newUser = new User(email, firstName, lastName, address);
 //            users.put(email, newUser);
@@ -34,16 +37,21 @@ public class EBankingApp {
 //            throw new UserAlreadyExistsException("User with " + email + " already exists");
 //        }
 //    }
-public UserBuilder createUserBuilder() {
-    return new UserBuilder();
-}
+    public UserBuilder createUserBuilder() {
+        return new UserBuilder();
+    }
 
     public void createUser(User user) throws UserAlreadyExistsException {
         if (!users.containsKey(user.getEmail())) {
             users.put(user.getEmail(), user);
+            stocksRecommended.addObserver(user); // !!
         } else {
             throw new UserAlreadyExistsException("User with " + user.getEmail() + " already exists");
         }
+    }
+
+    public StocksManager getRecomandareManager() {
+        return stocksRecommended;
     }
 
     public void listUser(String email) throws UserDoestExistException {
@@ -127,7 +135,6 @@ public UserBuilder createUserBuilder() {
             List<String> stocksList = user.getPortofoliu().getStocks();
             for (int i = 0; i < stocksList.size(); i++) {
                 String stock = stocksList.get(i);
-//                String[] stockDetails = stock.split(" - ");
                 String[] stockDetails = stock.split(" ");
 
                 System.out.print("{");
@@ -195,14 +202,24 @@ public UserBuilder createUserBuilder() {
                 // Verifica daca utilizatorul are suficiente fonduri in contul de sursa
                 if (user.getPortofoliu().getConturi().get(sourceCurrency).getBalance() >= amount) {
                     // Retrage suma din contul de sursa
-                    user.getPortofoliu().getConturi().get(sourceCurrency).withdrawAccount(amountInDestinationCurrency);
-
+                    if (!premiumOption) {
+                        user.getPortofoliu().getConturi().get(sourceCurrency).withdrawAccount(amountInDestinationCurrency);
+                    } else {
+                        user.getPortofoliu().getConturi().get(sourceCurrency).withdrawAccountPremium(amountInDestinationCurrency);
+                    }
                     // Adauga suma in contul de destinatie
-                   // user.getPortofoliu().getConturi().get(destinationCurrency).deposit(amount);
-                    Command depositCommand =  new DepositCommand(user, destinationCurrency, amount);
-                    TransactionInvoker invoker = new TransactionInvoker();
-                    invoker.setCommand(depositCommand);
-                    invoker.executeCommand();
+//                    Account destinationAccount = user.getPortofoliu().getConturi().get(destinationCurrency);
+//                    if (destinationAccount != null) {
+//                        // Adauga suma in contul de destinatie
+//                        destinationAccount.deposit(amount);
+//                    } else {
+//                        throw new InsufficientAmountExchangeException("Destination account " + destinationCurrency + " not found");
+//                    }
+                    user.getPortofoliu().getConturi().get(destinationCurrency).deposit(amount);
+//                    Command depositCommand =  new DepositCommand(user, destinationCurrency, amount);
+//                    TransactionInvoker invoker = new TransactionInvoker();
+//                    invoker.setCommand(depositCommand);
+//                    invoker.executeCommand();
 
                 } else {
                     throw new InsufficientAmountExchangeException("insufficient amount in account " + sourceCurrency + " for exchange");
@@ -224,11 +241,11 @@ public UserBuilder createUserBuilder() {
                     // Withdraw the amount from the user's account
                     user.getPortofoliu().getConturi().get(currency).withdrawAccount(amount);
                     // Deposit the amount into the friend's account
-                //    friend.getPortofoliu().getConturi().get(currency).deposit(amount);
-                    Command depositCommand =  new DepositCommand(friend, currency, amount);
-                    TransactionInvoker invoker = new TransactionInvoker();
-                    invoker.setCommand(depositCommand);
-                    invoker.executeCommand();
+                    friend.getPortofoliu().getConturi().get(currency).deposit(amount);
+//                    Command depositCommand =  new DepositCommand(friend, currency, amount);
+//                    TransactionInvoker invoker = new TransactionInvoker();
+//                    invoker.setCommand(depositCommand);
+//                    invoker.executeCommand();
                 } else {
                     throw new InsufficientAmountTransferException("Insufficient amount in account " + currency + " for transfer");
                 }
@@ -236,54 +253,53 @@ public UserBuilder createUserBuilder() {
         }
     }
 
-    public void recommendStocks(List<String[]> stocksValues) {
-        List<String> recommendedStocks = new ArrayList<>();
+//    public void recommendStocks(List<String[]> stocksValues) {
+//        List<String> recommendedStocks = new ArrayList<>();
+//
+//        // Parcurge fiecare sublista din stocksValues incepand cu a doua lista
+//        for (int i = 1; i < stocksValues.size(); i++) {
+//            String companyName = stocksValues.get(i)[0];
+//            List<Double> stockValues = new ArrayList<>();
+//
+//            // Parcurge valorile pentru fiecare zi din sublista curenta
+//            for (int j = 1; j < stocksValues.get(i).length; j++) {
+//                stockValues.add(Double.parseDouble(stocksValues.get(i)[j]));
+//            }
+//
+//            // Calculeaza SMA pe termen scurt (ultimele 5 zile)
+//            double shortTermSMA = calculateSMA(stockValues, 5);
+//
+//            // Calculeaza SMA pe termen lung (ultimele 10 zile)
+//            double longTermSMA = calculateSMA(stockValues, 10);
+//
+//            // Verifica conditia si adauga la lista de recomandari
+//            if (shortTermSMA > longTermSMA) {
+//                recommendedStocks.add(companyName);
+//            }
+//        }
+//
+//        // Afiseaza lista de recomandari
+//        System.out.print("{");
+//        System.out.print("\"stockstobuy\":[");
+//        for (int i = 0; i < recommendedStocks.size(); i++) {
+//            System.out.print("\"" + recommendedStocks.get(i) + "\"");
+//            if (i < recommendedStocks.size() - 1) {
+//                System.out.print(",");
+//            }
+//        }
+//        System.out.println("]}");
+//    }
+//
+//    private double calculateSMA(List<Double> values, int term) {
+//
+//        double sum = 0;
+//        for (int i = values.size() - term; i < values.size(); i++) {
+//            sum += values.get(i);
+//        }
+//
+//        return sum / term;
+//    }
 
-        // Parcurge fiecare sublista din stocksValues incepand cu a doua lista
-        for (int i = 1; i < stocksValues.size(); i++) {
-            String companyName = stocksValues.get(i)[0];
-            List<Double> stockValues = new ArrayList<>();
-
-            // Parcurge valorile pentru fiecare zi din sublista curenta
-            for (int j = 1; j < stocksValues.get(i).length; j++) {
-                stockValues.add(Double.parseDouble(stocksValues.get(i)[j]));
-            }
-
-            // Calculeaza SMA pe termen scurt (ultimele 5 zile)
-            double shortTermSMA = calculateSMA(stockValues, 5);
-
-            // Calculeaza SMA pe termen lung (ultimele 10 zile)
-            double longTermSMA = calculateSMA(stockValues, 10);
-
-            // Verifica conditia si adauga la lista de recomandari
-            if (shortTermSMA > longTermSMA) {
-                recommendedStocks.add(companyName);
-            }
-        }
-
-        // Afiseaza lista de recomandari
-        System.out.print("{");
-        System.out.print("\"stockstobuy\":[");
-        for (int i = 0; i < recommendedStocks.size(); i++) {
-            System.out.print("\"" + recommendedStocks.get(i) + "\"");
-            if (i < recommendedStocks.size() - 1) {
-                System.out.print(",");
-            }
-        }
-        System.out.println("]}");
-    }
-
-    private double calculateSMA(List<Double> values, int term) {
-
-        double sum = 0;
-        for (int i = values.size() - term; i < values.size(); i++) {
-            sum += values.get(i);
-        }
-
-        return sum / term;
-    }
-
-    // Adauga aceasta metoda in clasa EBankingApp
     public void buyStocks(String userEmail, String companyName, int noOfStocks, List<String[]> stocksValues) throws InsufficientAmountStocks {
         User user = users.get(userEmail);
 
@@ -296,13 +312,17 @@ public UserBuilder createUserBuilder() {
 
                     // Calculeaza valoarea totala cheltuita pentru actiuni
                     double totalCost = noOfStocks * stockPrice;
+                    double totalCostPremium = noOfStocks * stockPrice - 0.05 * noOfStocks * stockPrice;
 
                     // Verifica daca utilizatorul are suficiente fonduri in cont pentru a cumpara actiunile
                     if (user.getPortofoliu().getConturi().containsKey("USD") &&
                             user.getPortofoliu().getConturi().get("USD").getBalance() >= totalCost) {
                         // Retrage suma din contul de USD
-                        user.getPortofoliu().getConturi().get("USD").withdrawStocks(totalCost);
-//                        user.getPortofoliu().adaugaStock(companyName + " - " + noOfStocks + " stocks");
+                        if (!premiumOption) {
+                            user.getPortofoliu().getConturi().get("USD").withdrawStocks(totalCost);
+                        } else {
+                            user.getPortofoliu().getConturi().get("USD").withdrawStocksPremium(totalCostPremium);
+                        }
                         user.getPortofoliu().addStock(companyName, noOfStocks);
 
                     } else {
@@ -313,4 +333,31 @@ public UserBuilder createUserBuilder() {
             }
         }
     }
+//    public void buyPremium(String userEmail) {
+//        User user = users.get(userEmail);
+//
+//        if (user != null) {
+//            user.buyPremium();
+//        }
+//    }
+
+    public void buyPremium(String email) throws InsufficientAmountTransferException, UserDoestExistException {
+        User user = users.get(email);
+        if (!premiumOption) {
+
+            if (user.portofoliu.getConturi().containsKey("USD") &&
+                    user.getPortofoliu().getConturi().get("USD").getBalance() >= 100) {
+                user.portofoliu.getConturi().get("USD").withdrawStocks(100);
+
+                premiumOption = true;
+
+            } else if (user == null) {
+                throw new UserDoestExistException("User with " + email + " doesn't exist");
+            } else {
+                throw new InsufficientAmountTransferException("Insufficient amount in account for buying premium option");
+
+            }
+        }
+    }
+
 }

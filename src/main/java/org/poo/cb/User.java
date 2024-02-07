@@ -3,7 +3,7 @@ package org.poo.cb;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
+public class User implements ObserverUser{
     String email;
     String firstname; // prenume
     String lastname;
@@ -12,6 +12,9 @@ public class User {
     Portofoliu portofoliu;
 
     List<String> friends;
+    List<String> recommendedStocks;
+
+
 
     public User(String email, String firstname, String lastname, String address) {
         this.email = email;
@@ -20,6 +23,15 @@ public class User {
         this.address = address;
         this.portofoliu = new Portofoliu();
         this.friends = new ArrayList<>();
+        this.recommendedStocks = new ArrayList<>();
+
+    }
+    public void update(List<String> recommendedStocks) {
+        setRecommendedStocks(recommendedStocks);
+    }
+
+    private void setRecommendedStocks(List<String> recommendedStocks) {
+        this.recommendedStocks = recommendedStocks;
     }
 
     public String getEmail() {
@@ -64,4 +76,31 @@ public class User {
             account.deposit(amount);
         }
     }
+//    public void buyPremium() {
+//        // Se presupune că utilizatorul are deja un cont în dolari
+//        if (portofoliu.getConturi().containsKey("USD") && portofoliu.getConturi().get("USD").getBalance() >= 100) {
+//            portofoliu.getConturi().get("USD").withdrawAccount(100);
+//            premiumOption = true;
+//        }
+//    }
+//    public void buyPremium() {
+//        if (!premiumOption) {
+//            // Verificați dacă utilizatorul are suficienți bani în cont
+//            if (portofoliu.getConturi().containsKey("USD") &&
+//                    portofoliu.getConturi().get("USD").getBalance() >= 100) {
+//                // Retrage 100 USD din cont
+//                portofoliu.getConturi().get("USD").withdrawAccount(100);
+//
+//                // Acordați opțiunea premium
+//                premiumOption = true;
+//
+//                // Adăugați beneficiile opțiunii premium (de exemplu, reducerea la schimbul valutar și la cumpărarea acțiunilor)
+//                // Adăugați codul corespunzător pentru beneficiile opțiunii premium
+//            } else {
+//                System.out.println("Insufficient funds to purchase premium option.");
+//            }
+//        } else {
+//            System.out.println("Premium option already purchased.");
+//        }
+//    }
 }

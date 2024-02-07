@@ -23,6 +23,8 @@ public abstract class Account {
     public abstract void withdrawAccount(double amount);
 
     public abstract void withdrawStocks(double amount);
+    public abstract void withdrawAccountPremium(double amount);
+    public abstract void withdrawStocksPremium(double amount);
 }
 
 class USDAccount extends Account {
@@ -45,9 +47,14 @@ class USDAccount extends Account {
         }
     }
 
-
     public void withdrawStocks(double amount) {
         balance -= amount;
+    }
+    public void withdrawAccountPremium(double amount) {
+        balance -= amount;
+    }
+    public void withdrawStocksPremium(double amount) {
+        balance = balance - amount;
     }
 }
 
@@ -72,6 +79,12 @@ class EURAccount extends Account {
     public void withdrawStocks(double amount) {
         balance -= amount;
     }
+    public void withdrawAccountPremium(double amount) {
+        balance -= amount;
+    }
+    public void withdrawStocksPremium(double amount) {
+        balance = balance - amount * 0.05;
+    }
 }
 
 class GBPAccount extends Account {
@@ -94,6 +107,12 @@ class GBPAccount extends Account {
 
     public void withdrawStocks(double amount) {
         balance -= amount;
+    }
+    public void withdrawAccountPremium(double amount) {
+        balance -= amount;
+    }
+    public void withdrawStocksPremium(double amount) {
+        balance -=balance;
     }
 }
 
@@ -118,6 +137,12 @@ class JPYAccount extends Account {
     public void withdrawStocks(double amount) {
         balance -= amount;
     }
+    public void withdrawAccountPremium(double amount) {
+        balance -= amount;
+    }
+    public void withdrawStocksPremium(double amount) {
+        balance = balance - amount * 0.05;
+    }
 }
 
 class CADAccount extends Account {
@@ -140,5 +165,11 @@ class CADAccount extends Account {
 
     public void withdrawStocks(double amount) {
         balance -= amount;
+    }
+    public void withdrawAccountPremium(double amount) {
+        balance -= amount;
+    }
+    public void withdrawStocksPremium(double amount) {
+        balance = balance - amount * 0.05;
     }
 }

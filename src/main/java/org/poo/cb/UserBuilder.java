@@ -29,7 +29,6 @@ public class UserBuilder {
 
         public User build() {
             User user = new User(email, firstname, lastname, address);
-            // Puteți adăuga și alte configurații sau verificări aici, dacă este necesar.
             return user;
         }
 

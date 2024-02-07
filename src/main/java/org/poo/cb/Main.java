@@ -26,7 +26,7 @@ public class Main {
         String stockValuesPath = "src/main/resources/" + args[1];
         String commandsPath = "src/main/resources/" + args[2];
 
-        List<String[]> exchangeRates = null;
+        List<String[]> exchangeRates;
         try {
             CSVReader reader1 = new CSVReaderBuilder(new FileReader(exchangeRatesPath)).build();
             // Restul codului care foloseste obiectul reader1
@@ -37,23 +37,17 @@ public class Main {
 //                }
 //             //  System.out.println();  // Treci la urmatorul rand pentru afisare clara
 //            }
-        } catch (FileNotFoundException e) {
-            // Trateaza exceptia aici sau afiseaza un mesaj de eroare
-            e.printStackTrace();  // sau foloseste un alt mod de tratare a erorilor
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (CsvException e) {
             throw new RuntimeException(e);
         }
 
-        List<String[]> stocksValues = null;
+        List<String[]> stocksValues;
         try {
             CSVReader reader2 = new CSVReaderBuilder(new FileReader(stockValuesPath)).build();
             // Restul codului care foloseste obiectul reader1
             stocksValues = reader2.readAll();
-        } catch (FileNotFoundException e) {
-            // Trateaza exceptia aici sau afiseaza un mesaj de eroare
-            e.printStackTrace();  // sau foloseste un alt mod de tratare a erorilor
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (CsvException e) {
@@ -62,6 +56,7 @@ public class Main {
 
         EBankingApp app = EBankingApp.getInstance();
         UserBuilder userBuilder = app.createUserBuilder();
+        StocksManager recommededStocks = app.getRecomandareManager();
         app.clearUserData();
 
 
@@ -157,8 +152,10 @@ public class Main {
                         System.out.println(e.getMessage());
                     }
                 }
+
                 if (command1.equals("RECOMMEND") && command2.equals("STOCKS")) {
-                    app.recommendStocks(stocksValues);
+                  //  app.recommendStocks(stocksValues);
+                    recommededStocks.recommendStocks(stocksValues);
                 }
 
                 if (command1.equals("BUY") && command2.equals("STOCKS")) {
@@ -170,6 +167,19 @@ public class Main {
                     } catch (InsufficientAmountStocks e) {
                         System.out.println(e.getMessage());
                     }
+
+                }
+                if (command1.equals("BUY") && command2.equals("PREMIUM")) {
+                    String email = token[2];
+                    try {
+                        app.buyPremium(email);
+                    } catch (InsufficientAmountTransferException e) {
+                        System.out.println(e.getMessage());
+                    } catch (UserDoestExistException e) {
+                        System.out.println(e.getMessage());
+                    }
+
+
 
                 }
             }

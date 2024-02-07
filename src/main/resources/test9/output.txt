@@ -1,0 +1,6 @@
+{"email":"john.doe@email.com","firstname":"John","lastname":"Doe","address":"1401 Stoltenberg Islands Geralynstad SD 36945","friends":[]}
+Insufficient amount in account for buying premium option
+{"stocks":[],"accounts":[{"currencyname":"usd","amount":"9900.00"},{"currencyname":"eur","amount":"0.00"}]}
+{"stocks":[],"accounts":[{"currencyName":"USD","amount":"9741.00"},{"currencyName":"EUR","amount":"100.00"}]}
+{"stocks":[{"stockname":"amzn","amount":10},{"stockname":"intc","amount":100}],"accounts":[{"currencyname":"usd","amount":"3740.99"},{"currencyname":"eur","amount":"100.00"}]}
+User with nonBankingUser@email.com doesn't exist
