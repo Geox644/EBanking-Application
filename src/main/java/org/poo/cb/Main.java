@@ -2,7 +2,6 @@ package org.poo.cb;
 
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -26,17 +25,11 @@ public class Main {
         String stockValuesPath = "src/main/resources/" + args[1];
         String commandsPath = "src/main/resources/" + args[2];
 
+        // CSV Read
         List<String[]> exchangeRates;
         try {
             CSVReader reader1 = new CSVReaderBuilder(new FileReader(exchangeRatesPath)).build();
-            // Restul codului care foloseste obiectul reader1
             exchangeRates = reader1.readAll();
-//            for (String[] row : myEntries) {
-//                for (String column : row) {
-//                    System.out.print(column + " ");
-//                }
-//             //  System.out.println();  // Treci la urmatorul rand pentru afisare clara
-//            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (CsvException e) {
@@ -46,7 +39,6 @@ public class Main {
         List<String[]> stocksValues;
         try {
             CSVReader reader2 = new CSVReaderBuilder(new FileReader(stockValuesPath)).build();
-            // Restul codului care foloseste obiectul reader1
             stocksValues = reader2.readAll();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -71,11 +63,11 @@ public class Main {
                     String email = token[2];
                     String firstName = token[3];
                     String lastName = token[4];
-                    // Concatenam cuvintele ramase in adresa utilizand un StringBuilder
                     StringBuilder addressBuilder = new StringBuilder();
                     for (int i = 5; i < token.length; i++) {
                         addressBuilder.append(token[i]).append(" ");
                     }
+                    // Builder
                     String address = addressBuilder.toString().trim();
                     User user = userBuilder
                             .setEmail(email)
@@ -84,7 +76,6 @@ public class Main {
                             .setAddress(address)
                             .build();
                     try {
-//                        app.createUser(email, firstName, lastName, address);
                         app.createUser(user);
                     } catch (UserAlreadyExistsException e) {
                         System.out.println(e.getMessage());
@@ -118,10 +109,10 @@ public class Main {
                 }
 
                 if (command1.equals("ADD") && command2.equals("MONEY")) {
-                    String userEmail = token[2];
+                    String email = token[2];
                     String currency = token[3];
                     double amount = Double.parseDouble(token[4]);
-                    app.addMoney(userEmail, currency, amount);
+                    app.addMoney(email, currency, amount);
                 }
 
                 if (command1.equals("LIST") && command2.equals("PORTFOLIO")) {
@@ -129,13 +120,13 @@ public class Main {
                     app.listPortfolio(email);
                 }
                 if (command1.equals("EXCHANGE") && command2.equals("MONEY")) {
-                    String userEmail = token[2];
-                    String sourceCurrency = token[3];
-                    String destinationCurrency = token[4];
+                    String email = token[2];
+                    String source = token[3];
+                    String destination = token[4];
                     double amount = Double.parseDouble(token[5]);
 
                     try {
-                        app.exchangeMoney(userEmail, sourceCurrency, destinationCurrency, amount, exchangeRates);
+                        app.exchangeMoney(email, source, destination, amount, exchangeRates);
                     } catch (InsufficientAmountExchangeException e) {
                         System.out.println(e.getMessage());
                     }
@@ -154,16 +145,16 @@ public class Main {
                 }
 
                 if (command1.equals("RECOMMEND") && command2.equals("STOCKS")) {
-                  //  app.recommendStocks(stocksValues);
+                    // observer
                     recommededStocks.recommendStocks(stocksValues);
                 }
 
                 if (command1.equals("BUY") && command2.equals("STOCKS")) {
-                    String userEmail = token[2];
+                    String email = token[2];
                     String companyName = token[3];
                     int noOfStocks = Integer.parseInt(token[4]);
                     try {
-                        app.buyStocks(userEmail, companyName, noOfStocks, stocksValues);
+                        app.buyStocks(email, companyName, noOfStocks, stocksValues);
                     } catch (InsufficientAmountStocks e) {
                         System.out.println(e.getMessage());
                     }
@@ -178,8 +169,6 @@ public class Main {
                     } catch (UserDoestExistException e) {
                         System.out.println(e.getMessage());
                     }
-
-
 
                 }
             }

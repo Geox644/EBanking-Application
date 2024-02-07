@@ -1,5 +1,6 @@
 package org.poo.cb;
 
+// Builder
 public class UserBuilder {
 
         private String email;

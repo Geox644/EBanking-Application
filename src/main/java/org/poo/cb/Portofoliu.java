@@ -25,7 +25,7 @@ public class Portofoliu {
     }
 
     public void addStock(String companyName, int noOfStocks) {
-            String stock = companyName + " " + noOfStocks;
-            stocks.add(stock);
+        String stock = companyName + " " + noOfStocks;
+        stocks.add(stock);
     }
 }

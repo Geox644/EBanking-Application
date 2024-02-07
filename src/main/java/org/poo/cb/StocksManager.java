@@ -2,6 +2,8 @@ package org.poo.cb;
 
 import java.util.ArrayList;
 import java.util.List;
+
+// Observer
 public class StocksManager {
     private List<ObserverUser> observers = new ArrayList<>();
 
@@ -14,15 +16,15 @@ public class StocksManager {
             observer.update(recommendedStocks);
         }
     }
+
     public void recommendStocks(List<String[]> stocksValues) {
         List<String> recommendedStocks = new ArrayList<>();
 
-        // Parcurge fiecare sublista din stocksValues incepand cu a doua lista
+        // parcurg incepand cu a doua sublista
         for (int i = 1; i < stocksValues.size(); i++) {
             String companyName = stocksValues.get(i)[0];
             List<Double> stockValues = new ArrayList<>();
 
-            // Parcurge valorile pentru fiecare zi din sublista curenta
             for (int j = 1; j < stocksValues.get(i).length; j++) {
                 stockValues.add(Double.parseDouble(stocksValues.get(i)[j]));
             }
@@ -31,16 +33,12 @@ public class StocksManager {
 
             double longTermSMA = calculateSMA(stockValues, 10);
 
-            // Verifica conditia si adauga la lista de recomandari
             if (shortTermSMA > longTermSMA) {
                 recommendedStocks.add(companyName);
                 notifyObservers(recommendedStocks);
             }
         }
 
-
-
-        // Afiseaza lista de recomandari
         System.out.print("{");
         System.out.print("\"stockstobuy\":[");
         for (int i = 0; i < recommendedStocks.size(); i++) {
